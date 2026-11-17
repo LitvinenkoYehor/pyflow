@@ -45,3 +45,45 @@ jest cykl i zgłaszany jest `WorkflowValidationError`.
 Złożoność: O(V + E) dla przetwarzania grafu oraz O(V log V) dla sortowania
 nazw w warstwach (V - liczba zadań, E - liczba zależności).
 Sortowanie alfabetyczne w warstwie zapewnia deterministyczny wynik.
+
+## Silnik wykonawczy (Laboratorium 2)
+
+```python
+from pyflow import run, format_report
+
+result = run(workflow)
+result.outputs       # nazwa zadania -> zwrócona wartość
+result.task_states   # nazwa zadania -> TaskState (status, czasy, błąd)
+result.succeeded     # True, gdy wszystkie zadania zakończyły się sukcesem
+print(format_report(result))  # raport tekstowy z czasami
+```
+
+### Kontrakt funkcji zadania
+
+Każda funkcja ma postać `function(inputs, params)`. `inputs` to mapowanie
+(tylko do odczytu) `nazwa bezpośredniej zależności -> jej wynik`; `params`
+to konfiguracja zadania. Funkcje są synchroniczne.
+
+### Statusy
+
+`PENDING` (jeszcze nie uruchomione), `RUNNING`, `SUCCEEDED`, `FAILED`
+(funkcja rzuciła wyjątek), `SKIPPED` (zadanie zależy od zadania, które nie
+zakończyło się sukcesem).
+
+### Polityka błędów
+
+Po awarii zadanie dostaje `FAILED`, a jego następniki (także pośrednie)
+`SKIPPED` – ich funkcje nie są wywoływane. Zadania niezależne od
+uszkodzonej gałęzi są DOKOŃCZONE (nie ma fail-fast). Błąd jest zapisany w
+`result.task_states[nazwa].error` jako `TaskExecutionError` z nazwą zadania
+i oryginalnym wyjątkiem w `__cause__`. `run(wf, raise_on_failure=True)`
+dodatkowo rzuca ten wyjątek po zakończeniu przebiegu.
+
+### Przykład end-to-end
+
+```bash
+python examples/csv_report.py
+```
+
+Czyta `examples/data/sales.csv`, odrzuca niepoprawne rekordy, agreguje
+przychód po regionach i zapisuje `examples/report.json`.

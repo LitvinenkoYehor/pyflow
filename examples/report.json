@@ -1,0 +1,11 @@
+{
+  "rejected_rows": 3,
+  "revenue_by_region": {
+    "East": 600.0,
+    "North": 6500.0,
+    "South": 5401.5,
+    "West": 480.0
+  },
+  "total_revenue": 12981.5,
+  "valid_rows": 6
+}

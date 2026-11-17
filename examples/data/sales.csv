@@ -1,0 +1,10 @@
+region,product,quantity,price
+North,Laptop,2,3000.00
+North,Mouse,10,50.00
+South,Laptop,1,3000.00
+South,Monitor,3,800.50
+East,Keyboard,5,120.00
+East,Mouse,abc,50.00
+,Laptop,1,3000.00
+West,Monitor,-2,800.50
+West,Keyboard,4,120.00
